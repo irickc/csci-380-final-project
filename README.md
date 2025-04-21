@@ -1,54 +1,36 @@
-# React + TypeScript + Vite
+# Routes
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## /
+The home page.
 
-Currently, two official plugins are available:
+## /posts/:title
+A page for viewing a single post by its title. Renders the PostDetail component.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## /posts/create/:taskTitle?
+A page for creating or editing a post. Edits a post when the taskTitle parameter is passed, and creates a new post when no parameters are passed. Renders the PostForm component.
 
-## Expanding the ESLint configuration
+## /posts/list
+A page for listing all currently available posts. Renders the PostList component, which is composed of PostDetail components.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+# Components
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
+## PostDetail
+File Path: `/src/posts/PostDetail`
+Accepts an optional task property, which is post of type Task.
+When the task property is received, this component renders information about the given task.
+Otherwise, the component fetches a task from the server given by the route parameters.
+Clicking on the task title allows the user to navigate to `/posts/:title` to view that post only.
+Clicking on the edit link allows the user to edit the post.
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Postform
+File Path: `/src/posts/PostForm`
+Renders a form which allows the user to either edit a task or create a new one.
+When a path parameter is present, the form edits a task on the server.
+If no path parameter is present, the form creates a new task on the server.
+Once the form is submitted, the user is redirected back to `/`.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
-```
+## PostList
+File Path: `/src/posts/PostList`
+Renders a list of all available posts on the server.
+This component first fetches all posts form the server.
+Once the tasks are fetched, they are collected into an array of PostDetail components and displayed in an unordered list.
