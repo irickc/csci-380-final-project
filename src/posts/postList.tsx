@@ -1,32 +1,36 @@
 import { useEffect, useState } from 'react';
+import type { Task } from './taskType';
+import axios from 'axios';
+import PostDetail from './postDetail';
 
-export default function PostList(props: {
-    post: {
-        id: number,
-        title: string,
-        note: string,
-        completed: boolean,
-    }
-}) {
-    const [posts, setPosts] = useState([]);
-    let postElements = [];
+export default function PostList() {
+    const [tasks, setTasks] = useState<Task[]>([]);
 
-    function fetchPosts() {
-        // fetch the list of posts
-        // setPosts
+    async function fetchTasks() {
+        // fetch the list of tasks
+        const tasks: Task[] = await axios.get('http://localhost:3000/todo').then(response => response.data);
+
+        // setTasks
+        setTasks(tasks);
     }
 
     useEffect(() => {
-        fetchPosts();
+        fetchTasks();
+    }, []);
 
-        // create the post elements (PostDetail components)
+    const taskElements = tasks.map(task => {
+        return (
+            <li className="task-li" key={task!.id}>
+                <PostDetail task={task} />
+            </li>
+        );
     });
 
+    console.log(taskElements);
+
     return (
-        <div className="posts-list">
-            <ul>
-                {postElements}
-            </ul>
-        </div>
+        <ul className='listContainer'>
+            {taskElements}
+        </ul>
     );
 }

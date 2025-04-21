@@ -1,27 +1,45 @@
-import {useState} from 'react';
+import { useEffect, useState } from 'react';
+import { useParams, Link, useNavigate } from 'react-router';
+import type { Task } from './taskType';
+import axios from 'axios';
 
 export default function PostDetail(props: {
-    post: {
-        id: number,
-        title: string,
-        note: string,
-        completed: boolean,
-    }
+    task?: Task
 }) {
-    const [completed, setCompleted] = useState(props.post.completed);
+    const navigate = useNavigate();
+    const { title } = useParams();
+    const [task, setTask] = useState<Task>(undefined);
 
-    function toggleCompleted() {
-        setCompleted(!completed);
+    async function fetchTask(title: string) {
+        const task = await axios.get(`http://localhost:3000/todo/${title}`).then(response => response.data);
 
-        // update completion on the server
-        // roll back if it fails?
+        setTask(task);
     }
+
+    function viewTask() {
+        navigate(`/posts/${task?.title}`);
+    }
+
+    useEffect(() => {
+        if (props.task) {
+            setTask(props.task);
+        } else if (title) {
+            fetchTask(title);
+        }
+
+        console.log(task);
+    }, []);
 
     return (
-        <div className="post-container">
-            <h2 className="post-title">Title</h2>
-            <p className="post-note">Notes</p>
-            <button type="button" onClick={toggleCompleted}></button>
+        <div className="task-container">
+            <div className="task-card">
+                <div className="task-header">
+                    <h2 className="task-title" onClick={viewTask}>{task?.title}</h2>
+                    <Link className="edit-link" to={`/posts/create/${task?.title}`}>Edit</Link>
+                </div>
+                <p>{task?.notes}</p>
+                <p>{task?.completed ? "Completed" : "Not Completed"}</p>
+            </div>
         </div>
     );
 }

@@ -13,9 +13,8 @@ ReactDOM.createRoot(root!).render(
         <Routes>
             <Route path='/' element={<Home />} />
             <Route path='posts'>
-                <Route path=':id' element={<PostDetail />} />
-                <Route path='create' element={<PostForm />} />
-                <Route path='edit/:id' element={<PostForm />} />
+                <Route path=':title' element={<PostDetail />} />
+                <Route path='create/:taskTitle?' element={<PostForm />} />
                 <Route path='list' element={<PostList />} />
             </Route>
         </Routes>

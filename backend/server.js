@@ -1,15 +1,20 @@
-const hapi = require('@hapi/hapi');
+import hapi from '@hapi/hapi';
 
 let tasks = [
-    { id: 1, title: "submit-assignment-3", completed: "false", notes: "See eCampus for details" },
-    { id: 2, title: "feed-dog", completed: "false", notes: "" },
-    { id: 3, title: "buy-groceries", completed: "false", notes:"Eggs, milk, cereal" }
+    { id: 1, title: "submit-assignment-3", completed: false, notes: "See eCampus for details" },
+    { id: 2, title: "feed-dog", completed: false, notes: "" },
+    { id: 3, title: "buy-groceries", completed: false, notes:"Eggs, milk, cereal" }
 ];
 
 async function startServer() {
     const server = hapi.server({
         port: 3000,
-        host: 'localhost'
+        host: 'localhost',
+        routes: {
+            cors: {
+                origin: ["http://127.0.0.1:5173"]
+            }
+        }
     });
 
     server.route([
@@ -43,10 +48,7 @@ async function startServer() {
             path: '/todo',
             handler: (request, h) => {
                 try {
-                    let responseString = '';
-                    for (const task of tasks) {
-                        responseString += `${JSON.stringify(task)}\n`;
-                    }
+                    const responseString = JSON.stringify(tasks);
 
                     return h.response(`${responseString}\n`).code(200);
                 } catch (err) {
