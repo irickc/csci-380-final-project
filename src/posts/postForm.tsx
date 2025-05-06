@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import axios from 'axios';
 import { useParams, useNavigate } from "react-router";
 import type { Task } from './taskType';
@@ -42,16 +42,16 @@ export default function PostForm() {
         navigate('/');
     }
 
-    function handleTitleChange(event) {
+    function handleTitleChange(event: React.ChangeEvent<HTMLInputElement>) {
         setTitle(event.target.value);
         console.log(title);
     }
 
-    function handleCompletedChange(event) {
+    function handleCompletedChange(event: React.ChangeEvent<HTMLInputElement>) {
         setCompleted(event.target.checked);
     }
 
-    function handleNotesChange(event) {
+    function handleNotesChange(event: React.ChangeEvent<HTMLInputElement>) {
         setNotes(event.target.value);
         console.log(notes);
     }

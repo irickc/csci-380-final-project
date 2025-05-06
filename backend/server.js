@@ -1,40 +1,48 @@
 import hapi from '@hapi/hapi';
+import Task from './Task.js';
+import mongoose from 'mongoose';
+import path from 'path';
+import * as inert from '@hapi/inert';
+
+mongoose.connect("mongodb://127.0.0.1:27017/csci380?directConnection=true&serverSelectionTimeoutMS=2000&appName=mongosh+2.5.0");
 
 let tasks = [
-    { id: 1, title: "submit-assignment-3", completed: false, notes: "See eCampus for details" },
-    { id: 2, title: "feed-dog", completed: false, notes: "" },
-    { id: 3, title: "buy-groceries", completed: false, notes:"Eggs, milk, cereal" }
+    new Task({ title: "submit-assignment-3", completed: false, notes: "See eCampus for details" }),
+    new Task({ title: "feed-dog", completed: false, notes: "" }),
+    new Task({ title: "buy-groceries", completed: false, notes:"Eggs, milk, cereal" })
 ];
+
+async function seedDB() {
+    for (const task of tasks) {
+        await task.save();
+    }
+}
 
 async function startServer() {
     const server = hapi.server({
         port: 3000,
         host: 'localhost',
         routes: {
-            cors: {
-                origin: ["http://127.0.0.1:5173"]
-            }
+            cors: true
         }
     });
+
+    await server.register(inert);
 
     server.route([
         // create route
         {
             method: 'POST',
             path: '/todo',
-            handler: (request, h) => {
+            handler: async (request, h) => {
                 try {
                     const { title, completed, notes } = request.payload;
-                    let cleanedTitle = title.replaceAll(' ', '-');
-                    cleanedTitle = cleanedTitle.toLowerCase();
-                    const newTask = {
-                        id: tasks.length + 1,
-                        title: cleanedTitle,
+                    await Task.create({
+                        title: title,
                         completed: completed,
                         notes: notes
-                    }
+                    });
 
-                    tasks.push(newTask);
                     return h.response(`Created ${JSON.stringify(newTask)}\n`).code(201);
                 } catch (err) {
                     return h.response(`Failed to create the new task: ${err}\n`).code(500);
@@ -46,9 +54,10 @@ async function startServer() {
         {
             method:'GET',
             path: '/todo',
-            handler: (request, h) => {
+            handler: async (request, h) => {
                 try {
-                    const responseString = JSON.stringify(tasks);
+                    const allTasks = await Task.find({}).exec();
+                    const responseString = JSON.stringify(allTasks);
 
                     return h.response(`${responseString}\n`).code(200);
                 } catch (err) {
@@ -60,13 +69,13 @@ async function startServer() {
         {
             method: 'GET',
             path: '/todo/{title}',
-            handler: (request, h) => {
+            handler: async (request, h) => {
                 try {
                     const taskTitle = request.params.title;
-                    const task = tasks.find(task => task.title === taskTitle);
+                    const thisTask = await Task.findOne({ title: taskTitle }).exec();
 
-                    if (task) {
-                        return h.response(JSON.stringify(task) + '\n').code(200);
+                    if (thisTask) {
+                        return h.response(JSON.stringify(thisTask) + '\n').code(200);
                     } else {
                         return h.response("No task with that title was found\n").code(404);
                     }
@@ -80,18 +89,19 @@ async function startServer() {
         {
             method: 'PUT',
             path: '/todo/{title}',
-            handler: (request, h) => {
+            handler: async (request, h) => {
                 try {
                     const taskTitle = request.params.title;
                     const { title, completed, notes } = request.payload;
-                    const task = tasks.find(task => task.title === taskTitle);
+                    const thisTask = await Task.findOne({ title: taskTitle }).exec();
 
-                    if (task) {
-                        task.title = title;
-                        task.completed = completed;
-                        task.notes = notes;
+                    if (thisTask) {
+                        thisTask.title = title;
+                        thisTask.completed = completed;
+                        thisTask.notes = notes;
+                        await thisTask.save();
 
-                        return h.response(`Updated ${JSON.stringify(task)}\n`).code(200);
+                        return h.response(`Updated ${JSON.stringify(thisTask)}\n`).code(200);
                     } else {
                         return h.response("No task with that title was found\n").code(404);
                     }
@@ -105,20 +115,26 @@ async function startServer() {
         {
             method: 'DELETE',
             path: '/todo/{title}',
-            handler: (request, h) => {
+            handler: async (request, h) => {
                 try {
                     const taskTitle = request.params.title;
-                    const taskIndex = tasks.findIndex(task => task.title === taskTitle);
-                    const task = tasks.find(task => task.title === taskTitle);
+                    await Task.deleteOne({ title: taskTitle });
 
-                    if (task) {
-                        tasks.splice(taskIndex, 1);
-                        return h.response(`Deleted ${JSON.stringify(task)}\n`).code(200);
-                    } else {
-                        return h.response("No task with that title was found\n").code(404);
-                    }
+                    return h.response(`Deleted ${JSON.stringify(task)}\n`).code(200);
                 } catch (err) {
                     return h.response(`Failed to delete the task: ${err}\n`).code(500);
+                }
+            }
+        },
+
+        {
+            method: '*',
+            path: '/{any*}',
+            handler: {
+                directory: {
+                    path: path.join(process.cwd(), '..', 'dist'),
+                    index: true,
+                    redirectToSlash: true
                 }
             }
         }
@@ -128,4 +144,12 @@ async function startServer() {
     console.log(`Server running ${server.info.uri}`);
 }
 
-startServer();
+async function main() {
+    const firstTask = await Task.findOne();
+    if (!firstTask) {
+        await seedDB();
+    }
+    startServer();
+}
+
+main();
