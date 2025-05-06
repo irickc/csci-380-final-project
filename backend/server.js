@@ -37,10 +37,7 @@ async function startServer() {
             handler: async (request, h) => {
                 try {
                     const { title, completed, notes } = request.payload;
-                    console.log(title);
-                    console.log(completed);
-                    console.log(notes);
-                    await Task.create({
+                    const newTask = await Task.create({
                         title: title,
                         completed: completed,
                         notes: notes
