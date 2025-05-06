@@ -8,6 +8,8 @@ I implemented a TODO application which serves as an interface for interacting wi
 2. Install the necessary dependencies: `npm i`
 3. Change the `backendBaseURL` in `src/main.tsx` to match your deployment environment.
 4. Change the MongoDB connection URI, port, and hostname in `backend/server.js` to match your deployment environment.
+5. Run `npm run build` to build the application.
+6. Run `node run backend/server.js` to run the application.
 
 # Website Routes
 
