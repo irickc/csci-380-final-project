@@ -4,7 +4,7 @@ import mongoose from 'mongoose';
 import path from 'path';
 import * as inert from '@hapi/inert';
 
-mongoose.connect("mongodb://127.0.0.1:27017/csci380?directConnection=true&serverSelectionTimeoutMS=2000&appName=mongosh+2.5.0");
+mongoose.connect("mongodb://127.0.0.1:27017/?directConnection=true&ServerSelectionTimeoutMS=2000&appName=mongosh+2.4.2");
 
 let tasks = [
     new Task({ title: "submit-assignment-3", completed: false, notes: "See eCampus for details" }),
@@ -20,8 +20,8 @@ async function seedDB() {
 
 async function startServer() {
     const server = hapi.server({
-        port: 3000,
-        host: 'localhost',
+        port: 80,
+        host: 'ec2-18-222-134-82.us-east-2.compute.amazonaws.com',
         routes: {
             cors: true
         }
@@ -49,7 +49,7 @@ async function startServer() {
                         notes: newTask.notes
                     }
 
-                    return h.response(`Created ${JSON.stringify(returnObject)}\n`).code(201);
+                    return h.response(`${JSON.stringify(returnObject)}\n`).code(201);
                 } catch (err) {
                     return h.response(`Failed to create the new task: ${err}\n`).code(500);
                 }
@@ -128,7 +128,7 @@ async function startServer() {
                             notes: thisTask.notes
                         }
 
-                        return h.response(`Updated ${JSON.stringify(returnObject)}\n`).code(200);
+                        return h.response(`${JSON.stringify(returnObject)}\n`).code(200);
                     } else {
                         return h.response("No task with that title was found\n").code(404);
                     }
