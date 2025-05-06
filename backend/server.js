@@ -43,7 +43,13 @@ async function startServer() {
                         notes: notes
                     });
 
-                    return h.response(`Created ${JSON.stringify(newTask)}\n`).code(201);
+                    const returnObject = {
+                        title: newTask.title,
+                        completed: newTask.completed,
+                        notes: newTask.notes
+                    }
+
+                    return h.response(`Created ${JSON.stringify(returnObject)}\n`).code(201);
                 } catch (err) {
                     return h.response(`Failed to create the new task: ${err}\n`).code(500);
                 }
@@ -57,7 +63,16 @@ async function startServer() {
             handler: async (request, h) => {
                 try {
                     const allTasks = await Task.find({}).exec();
-                    const responseString = JSON.stringify(allTasks);
+                    const returnObject = [];
+                    allTasks.map(task => {
+                        returnObject.push({
+                            title: task.title,
+                            completed: task.completed,
+                            notes: task.notes
+                        });
+                    });
+
+                    const responseString = JSON.stringify(returnObject);
 
                     return h.response(`${responseString}\n`).code(200);
                 } catch (err) {
@@ -74,8 +89,14 @@ async function startServer() {
                     const taskTitle = request.params.title;
                     const thisTask = await Task.findOne({ title: taskTitle }).exec();
 
+                    const returnObject = {
+                        title: thisTask.title,
+                        completed: thisTask.completed,
+                        notes: thisTask.notes
+                    }
+
                     if (thisTask) {
-                        return h.response(JSON.stringify(thisTask) + '\n').code(200);
+                        return h.response(JSON.stringify(returnObject) + '\n').code(200);
                     } else {
                         return h.response("No task with that title was found\n").code(404);
                     }
@@ -101,7 +122,13 @@ async function startServer() {
                         thisTask.notes = notes;
                         await thisTask.save();
 
-                        return h.response(`Updated ${JSON.stringify(thisTask)}\n`).code(200);
+                        const returnObject = {
+                            title: thisTask.title,
+                            completed: thisTask.completed,
+                            notes: thisTask.notes
+                        }
+
+                        return h.response(`Updated ${JSON.stringify(returnObject)}\n`).code(200);
                     } else {
                         return h.response("No task with that title was found\n").code(404);
                     }
@@ -120,7 +147,7 @@ async function startServer() {
                     const taskTitle = request.params.title;
                     await Task.deleteOne({ title: taskTitle });
 
-                    return h.response(`Deleted ${JSON.stringify(taskTitle)}\n`).code(200);
+                    return h.response(`Success\n`).code(200);
                 } catch (err) {
                     return h.response(`Failed to delete the task: ${err}\n`).code(500);
                 }
