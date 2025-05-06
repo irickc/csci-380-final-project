@@ -79,7 +79,7 @@ export default function PostForm(props: {
             <form className='task-form' action={submitForm}>
                 <div className="form-row">
                     <label htmlFor="title">Title:</label>
-                    <input type="text" id="title" name="title" placeholder="Title" onChange={handleTitleChange} required></input>
+                    <input type="text" id="title" name="title" placeholder={title != "" ? title : "Title"} onChange={handleTitleChange} required></input>
                 </div>
                 <div className="form-row">
                     <label htmlFor="completed">Completed?:</label>
@@ -87,7 +87,7 @@ export default function PostForm(props: {
                 </div>
                 <div className="form-row">
                     <label htmlFor="notes">Notes:</label>
-                    <input type="text" id="notes" name="notes" placeholder="Notes" onChange={handleNotesChange}></input>
+                    <input type="text" id="notes" name="notes" placeholder={notes != "" ? notes : "Notes"} onChange={handleNotesChange}></input>
                 </div>
                 <input type="submit"></input>
             </form>
