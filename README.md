@@ -1,6 +1,6 @@
-[Website Link](http://18.222.134.82)
+[Website Link](http://ec2-18-222-134-82.us-east-2.compute.amazonaws.com/)
 
-# Routes
+# Website Routes
 
 ## /
 The home page.
@@ -8,11 +8,17 @@ The home page.
 ## /posts/:title
 A page for viewing a single post by its title. Renders the PostDetail component.
 
-## /posts/create/:taskTitle?
-A page for creating or editing a post. Edits a post when the taskTitle parameter is passed, and creates a new post when no parameters are passed. Renders the PostForm component.
+## /posts/create/
+A page for creating new posts.
+
+## /posts/edit/:taskTitle?
+A page for editing posts. When the search parameter is undefined, the server attempts to edit a task with the title given by the user. If the search parameter is defined, the server updates the post with title taskTitle with the new data given by the user.
 
 ## /posts/list
 A page for listing all currently available posts. Renders the PostList component, which is composed of PostDetail components.
+
+# Backend API Routes
+
 
 # Components
 
