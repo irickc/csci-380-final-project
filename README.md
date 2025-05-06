@@ -1,5 +1,14 @@
 [Website Link](http://ec2-18-222-134-82.us-east-2.compute.amazonaws.com/)
 
+# Overview
+I implemented a TODO application which serves as an interface for interacting with the Hapi.js server CRUD APIs.
+
+# Setup Instructions
+1. Clone this repository or unzip the submitted folder.
+2. Install the necessary dependencies: `npm i`
+3. Change the `backendBaseURL` in `src/main.tsx` to match your deployment environment.
+4. Change the MongoDB connection URI, port, and hostname in `backend/server.js` to match your deployment environment.
+
 # Website Routes
 
 ## /
@@ -18,7 +27,7 @@ A page for editing posts. When the search parameter is undefined, the server att
 A page for listing all currently available posts. Renders the PostList component, which is composed of PostDetail components.
 
 # Backend API Routes
-
+Documentation is available via [Postman](https://documenter.getpostman.com/view/44703722/2sB2j6Ar1T).
 
 # Components
 
