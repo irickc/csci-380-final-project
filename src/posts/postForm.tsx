@@ -4,8 +4,7 @@ import { useParams, useNavigate, useLocation } from "react-router";
 import type { Task } from './taskType';
 
 export default function PostForm(props: {
-    backendBaseURL: string,
-    task?: Task
+    backendBaseURL: string
 }) {
     const navigate = useNavigate();
     const location = useLocation();
@@ -14,11 +13,16 @@ export default function PostForm(props: {
     const [completed, setCompleted] = useState(false);
     const [notes, setNotes] = useState("");
 
+    async function prePopulateFields() {
+        const original = await axios.get(`${props.backendBaseURL}/todo/${taskTitle}`).then(response => response.data);
+        setTitle(original.title);
+        setCompleted(original.completed);
+        setNotes(original.notes);
+    }
+
     useEffect(() => {
-            if (props.task) {
-                setTitle(props.task.title);
-                setCompleted(props.task.completed);
-                setNotes(props.task.notes);
+            if (taskTitle) {
+                prePopulateFields();
             }
     }, []);
 
