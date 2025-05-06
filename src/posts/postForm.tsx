@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import axios from 'axios';
 import { useParams, useNavigate, useLocation } from "react-router";
 import type { Task } from './taskType';
 
 export default function PostForm(props: {
-    backendBaseURL: string
+    backendBaseURL: string,
+    task?: Task
 }) {
     const navigate = useNavigate();
     const location = useLocation();
@@ -12,6 +13,14 @@ export default function PostForm(props: {
     const [title, setTitle] = useState("");
     const [completed, setCompleted] = useState(false);
     const [notes, setNotes] = useState("");
+
+    useEffect(() => {
+            if (props.task) {
+                setTitle(props.task.title);
+                setCompleted(props.task.completed);
+                setNotes(props.task.notes);
+            }
+    }, []);
 
     function submitForm() {
         if (taskTitle || location.pathname == '/posts/edit') {
