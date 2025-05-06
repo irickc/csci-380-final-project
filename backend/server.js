@@ -120,7 +120,7 @@ async function startServer() {
                     const taskTitle = request.params.title;
                     await Task.deleteOne({ title: taskTitle });
 
-                    return h.response(`Deleted ${JSON.stringify(task)}\n`).code(200);
+                    return h.response(`Deleted ${JSON.stringify(taskTitle)}\n`).code(200);
                 } catch (err) {
                     return h.response(`Failed to delete the task: ${err}\n`).code(500);
                 }

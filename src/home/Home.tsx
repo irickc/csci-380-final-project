@@ -4,9 +4,9 @@ import './Home.css';
 export default function Home() {
     return (
         <div className="home">
-            <Link to='/posts/create'>New Post</Link>
-            <Link to='/posts/create/submit-assignment3'>Edit Post</Link>
-            <Link to='posts/list'>Post List</Link>
+            <Link className="homeLink" to='/posts/create'>New Post</Link>
+            <Link className="homeLink" to='/posts/edit'>Edit Post</Link>
+            <Link className="homeLink" to='posts/list'>Post List</Link>
         </div>
     )
 }

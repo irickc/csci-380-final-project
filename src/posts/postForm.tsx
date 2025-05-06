@@ -1,17 +1,20 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import axios from 'axios';
-import { useParams, useNavigate } from "react-router";
+import { useParams, useNavigate, useLocation } from "react-router";
 import type { Task } from './taskType';
 
-export default function PostForm() {
+export default function PostForm(props: {
+    backendBaseURL: string
+}) {
     const navigate = useNavigate();
-    const { taskTitle } = useParams();
+    const location = useLocation();
+    let { taskTitle } = useParams();
     const [title, setTitle] = useState("");
     const [completed, setCompleted] = useState(false);
     const [notes, setNotes] = useState("");
 
     function submitForm() {
-        if (taskTitle) {
+        if (taskTitle || location.pathname == '/posts/edit') {
             // edit the task on the server
             const newTask: Task = {
                 title: title,
@@ -19,10 +22,14 @@ export default function PostForm() {
                 notes: notes
             }
 
-            axios.put(`http://localhost:3000/todo/${taskTitle}`, newTask).then((response) => {
+            if (!taskTitle) {
+                taskTitle = newTask.title;
+            }
+
+            axios.put(`${props.backendBaseURL}/todo/${taskTitle}`, newTask).then((response) => {
                 console.log(response);
             }).catch(e => {
-                console.error(`Failed to create new post: ${e}`);
+                console.error(`Failed to edit task: ${e}`);
             });
         } else {
             // create a new task on the server
@@ -32,10 +39,10 @@ export default function PostForm() {
                 notes: notes
             }
 
-            axios.post('http://localhost:3000/todo', newTask).then((response) => {
+            axios.post(`${props.backendBaseURL}/todo`, newTask).then((response) => {
                 console.log(response);
             }).catch(e => {
-                console.error(`Failed to create new post: ${e}`);
+                console.error(`Failed to create new task: ${e}`);
             });
         }
 
@@ -44,7 +51,6 @@ export default function PostForm() {
 
     function handleTitleChange(event: React.ChangeEvent<HTMLInputElement>) {
         setTitle(event.target.value);
-        console.log(title);
     }
 
     function handleCompletedChange(event: React.ChangeEvent<HTMLInputElement>) {
@@ -53,7 +59,6 @@ export default function PostForm() {
 
     function handleNotesChange(event: React.ChangeEvent<HTMLInputElement>) {
         setNotes(event.target.value);
-        console.log(notes);
     }
 
     return (

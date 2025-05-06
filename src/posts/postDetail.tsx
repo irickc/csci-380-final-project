@@ -4,6 +4,7 @@ import type { Task } from './taskType';
 import axios from 'axios';
 
 export default function PostDetail(props: {
+    backendBaseURL: string,
     task?: Task
 }) {
     const navigate = useNavigate();
@@ -11,9 +12,15 @@ export default function PostDetail(props: {
     const [task, setTask] = useState<Task>(undefined);
 
     async function fetchTask(title: string) {
-        const task = await axios.get(`http://localhost:3000/todo/${title}`).then(response => response.data);
+        const task = await axios.get(`${props.backendBaseURL}/todo/${title}`).then(response => response.data);
 
         setTask(task);
+    }
+
+    async function deleteTask() {
+        await axios.delete(`${props.backendBaseURL}/todo/${task?.title}`);
+
+        navigate('/');
     }
 
     function viewTask() {
@@ -35,10 +42,11 @@ export default function PostDetail(props: {
             <div className="task-card">
                 <div className="task-header">
                     <h2 className="task-title" onClick={viewTask}>{task?.title}</h2>
-                    <Link className="edit-link" to={`/posts/create/${task?.title}`}>Edit</Link>
+                    <Link className="edit-link" to={`/posts/edit/${task?.title}`}>Edit</Link>
                 </div>
                 <p>{task?.notes}</p>
                 <p>{task?.completed ? "Completed" : "Not Completed"}</p>
+                <button type='button' onClick={deleteTask}>Delete</button>
             </div>
         </div>
     );
